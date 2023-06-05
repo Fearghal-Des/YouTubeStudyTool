@@ -1,0 +1,199 @@
+{% extends 'Display/youbase.html' %}
+{% block content %}
+{% block head %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="https://cdn.tiny.cloud/1/2mtv3gujo2i5ds70e7k2t0jzbjwraerdlhhywnqqdrtmnnpt/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.js" integrity="sha512-Qsh05D07P6dURSZn8Qk+j8GI7cEK0OhXleZvTofmucwoDSkBC0juWf1401JdSE8os2kWEezMu7e9mlnszm3yEw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.css" integrity="sha512-vPg9GqsZZ4LHv9BkFfZSXt7y4D7YaARPU2JFmpZug4EgtJJrumytMAFZkNSk2LSyqWir0TNbh2tBq7UJIMxvlA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.js" integrity="sha512-7jEhcM7FbjGHo1ejs1iw1J8FxcnACx7Z3lG29gQ5vTBe2U/gaQpzwjzPCyg32zTwXCloQDdorpLufmu0nBIqnQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.css" integrity="sha512-/MlSi6MBnEjKBuoY+vWZE8slTPRlkaKiE46RE0L1jQHodl48ndAOjkVB0GKXHwVmbQhpnVdCTzsjoDGgkbUjyg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% load static %}
+<script src="{% static 'Display/functions.js' %}"></script>
+</head>
+{% endblock %}
+{% block body %}
+<script>
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue + '; SameSite=None; Secure'; // add the SameSite and Secure attributes
+  }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  ajaxRequest('GET', '/send_api_key/', null, 'json', function(error, response) {
+    if (error) {
+      console.error('Error:', error);
+    } else {
+      console.log('success');
+      // Use the API key as needed
+      let api_key = response.api_key_response;
+      loadYouTubeAPI(api_key); // Pass the API key to the loadYouTubeAPI function
+    }
+  });
+});
+
+function sendText() {
+
+  var text = tinymce.get('textarea').getContent();
+  var name = '{{ name }}';
+  var data = {
+    'text': text,
+    'name': name,
+    'csrfmiddlewaretoken': "{{ csrf_token }}"
+  };
+  
+
+  ajaxRequest('POST', '/add_text/', data, null, function(error, response) {
+    if (error) {
+      console.error('Error:', error);
+    } else {
+      console.log(text);
+      console.log('text success');
+    }
+  });
+}
+
+function onPlayerReady(event) {
+  event.target.cueVideoById({
+    videoId: "{{video_id}}", // Replace with your video ID
+    startSeconds: 0, // Start playing from the beginning
+    suggestedQuality: 'hd720' // You can set the suggested quality for playback
+  });
+}
+
+// Load the YouTube API asynchronously
+function loadYouTubeAPI(api_key) {
+  var tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api?apikey=' + api_key;
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
+
+// Once the YouTube API script is loaded, execute your code
+function onYouTubeIframeAPIReady() {
+  var screenWidth = window.innerWidth; // Get the width of the screen
+  var screenHeight = window.innerHeight; // Get the height of the screen
+  var playerWidth = screenWidth * 0.8; // Set the width of the player to 80% of the screen width
+  var playerHeight = screenHeight * 0.6; // Set the height of the player to 80% of the screen height
+
+  new YT.Player('player', {
+    height: playerHeight,
+    width: playerWidth,
+    videoId: "{{video_id}}", // Replace with your video ID
+    events: {
+      'onReady': onPlayerReady
+    }
+  });
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.js"></script>
+<script>
+  // Check if MathQuill has been loaded
+  if (typeof MQ !== 'undefined') {
+    // MathQuill is loaded
+    console.log('MathQuill is loaded.');
+    // You can proceed with your code that depends on MathQuill
+  } else {
+    // MathQuill is not loaded
+    console.log('MathQuill is not loaded yet.');
+    // You can handle the error or try loading MathQuill again
+  }
+
+  // Alternatively, you can use the window.onload event or DOMContentLoaded event
+  window.onload = function() {
+    // MathQuill is loaded
+    console.log('MathQuill is loaded.');
+    // You can proceed with your code that depends on MathQuill
+  };
+</script>
+    <div class='main-area'>
+      <div id="player"></div>
+      <div class='text-editor'>
+      <textarea id='textarea'>
+        \sqrt{3x+1} + (1+x)^2
+        {{words}}
+      </textarea>
+      <div class='buttons'>
+        {%csrf_token%}
+          <button class='btn btn-danger' onclick="sendText()" style="margin-left:30px;">Save</button>
+        <button onclick="saveAsWord('{{name}}')" class='btn btn-danger'>Save as Word</button>
+      </div>
+    </div>
+
+
+    <script>
+
+      function initializeMathQuill() {
+        var textarea = document.getElementById('textarea');
+        var mathField = MQ.MathField(textarea, {
+          spaceBehavesLikeTab: true,
+          handlers: {
+            edit: function() {
+              console.log(mathField.latex());
+            }
+          }
+        });
+        
+        mathField.latex('2^{\\frac{3}{2}}');
+        mathField.latex(textarea.value);
+    
+        // Additional code or actions that depend on MathQuill
+        console.log('MathQuill is loaded.');
+      }
+
+      function loadMathQuill() {
+        // Check if MathQuill has been loaded
+        if (typeof MQ !== 'undefined') {
+          // MathQuill is already loaded
+          initializeMathQuill();
+        } else {
+          // MathQuill is not loaded, wait for it to load
+          document.addEventListener('mathquill:loaded', initializeMathQuill);
+        }
+      }
+    
+      // Your existing code...
+    
+      // Call the loadMathQuill() function
+      loadMathQuill();
+
+    
+
+      tinymce.init({
+        selector: 'textarea',
+        plugins: 'lists advlist autolink autosave code emoticons image link media pagebreak preview save searchreplace table visualblocks wordcount latex',
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+        mergetags_list: [
+          { value: 'First.Name', title: 'First Name' },
+          { value: 'Email', title: 'Email' },
+        ],
+      });
+
+      function saveAsWord(filename) {
+        var textareaContent = tinymce.get('textarea').getContent().replace(/<[^>]*>/g, ""); // Get the HTML content from TinyMCE
+        // Create a new Blob object with the HTML content
+        var blob = new Blob([textareaContent], { type: 'application/msword' });
+        filename = filename.replace(/ /g, "_");
+        filename = filename.replace(/:/g, "");
+        // Use the FileSaver.js library to save the Blob as a Word document
+        saveAs(blob, filename + '.doc');
+      }
+      
+    </script>
+</body>
+{%endblock%}
+{%endblock%}

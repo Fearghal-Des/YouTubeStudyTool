@@ -1,0 +1,95 @@
+.primaryHeader{
+    background-color: red;
+    color: white;
+    text-align: center;
+    border-bottom: 1px solid #e1e1e1;
+    height: 2em;
+    position: fixed;
+    top: 0;
+    margin: 0 auto;
+    margin-block-start: 0 auto;
+    margin-block-end: 0 auto;
+    width: 100%;
+    z-index: 1000;
+}
+
+.main-area{
+    margin-top: 10em;
+    display: flex;
+    flex-direction: row;
+}
+
+.player{
+    width: 60%;
+    margin-right: 0.5em;
+}
+
+.text-editor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .docbutton {
+    margin-top: 10px; /* Adjust the margin as needed */
+  }
+
+  .container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10em;
+  }
+
+  .btn btn-danger{
+    background-color: red;
+  }
+
+  .playlist-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+
+  .video-name{
+    word-wrap: normal;
+  }
+  
+  .playlist-name:hover,
+  .video-name:hover{
+    color: red;
+    text-underline-offset: 0.5em;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .primaryHeader:hover{
+    cursor: pointer;
+  }
+
+  .playlists{
+    margin-top: 7em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .playlist-videos{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .buttons{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+  }

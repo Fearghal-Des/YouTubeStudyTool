@@ -1,0 +1,93 @@
+{% extends 'Display/youbase.html' %}
+
+{% block content %}
+
+{% block head %}
+{% load static %}
+
+{% endblock %}
+
+{% block body %}
+<script>
+    function gotoVideo(videoUrl) {
+            window.location.href = videoUrl;    
+    }
+    function gotoPlaylist(playlistUrl) {
+        window.location.href = playlistUrl;
+    }
+</script>
+<div class="container">
+    <form method="POST" action="{% url 'Display:create_models' %}">
+        {% csrf_token %}
+        <input type="text" name="url" id="urlInput" placeholder="Enter YouTube URL">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <button type="submit" class="btn btn-danger" onclick="showSpinner()">Submit</button>
+    </form>
+    <div class="spinner-border text-danger" style="display: none;" role="status" id="spinner">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <script>
+        function showSpinner() {
+            document.getElementById("spinner").style.display = "block";
+        }
+    </script>
+
+    <h2>Videos</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+          <div class="videos-and-playlists">
+            <div class="scrollable-row{% if videos|length > 2 %} overflow-auto{% endif %} d-flex flex-row flex-nowrap">
+              {% for video in videos %}
+              <div class="video-item">
+                <p class="video-name" onclick="gotoVideo('{% url 'Display:show_video' video.name %}')">{{ video.name }}</p>
+                <img src="{{ video.thumbnail }}" alt="thumbnail">
+                <form method="POST" action="{% url 'Display:delete_video' video.name %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                  <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      <h2>Playlists</h2>
+        <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="videos-and-playlists">
+            <div class="scrollable-row{% if playlists|length > 2 %} overflow-auto{% endif %} d-flex flex-row flex-nowrap">
+                {% for playlist in playlists %}
+                <div class="playlist-item">
+                    <p class="playlist-name" data-max-length="45" onclick="gotoPlaylist('{%url 'Display:show_playlist' playlist.name%}')">{{ playlist.name }}</p>
+                <img src="{{ playlist.thumbnail }}" alt="thumbnail" style="margin-right: 10px">
+                <form method="POST" action="{% url 'Display:delete_playlist' playlist.name %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+                </div>
+                {% endfor %}
+            </div>
+            </div>
+        </div>
+        </div>
+        <script>
+            // Truncate playlist names based on the specified maximum length
+            const playlistNames = document.querySelectorAll('.playlist-name');
+            playlistNames.forEach(name => {
+              const maxLength = parseInt(name.dataset.maxLength, 10);
+              const text = name.textContent;
+              if (text.length > maxLength) {
+                name.textContent = text.slice(0, maxLength) + '...';
+              }
+            });
+          </script>
+          
+
+</div>
+{% endblock %}
+{% endblock %}
+
